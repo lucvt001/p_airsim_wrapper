@@ -304,7 +304,7 @@
     {
       "id": "Chase",
       "type": "camera",
-      "enabled": true,
+      "enabled": false,
       "parent-link": "Frame",
       "capture-interval": 0.03,
       "capture-settings": [
@@ -331,7 +331,7 @@
       }
     },
     {
-      "id": "DownCamera",
+      "id": "MainCamera",
       "type": "camera",
       "enabled": true,
       "parent-link": "Frame",
@@ -339,75 +339,14 @@
       "capture-settings": [
         {
           "image-type": 0,  // scene camera
-          "width": 400,
-          "height": 225,
+          "width": 640,
+          "height": 480,
           "fov-degrees": 90,
           "capture-enabled": true,
           "streaming-enabled": false,
           "pixels-as-float": false,
           "compress": false,
           "target-gamma": 2.5
-        },
-        {
-          "image-type": 1,  // depth planar
-          "width": 400,
-          "height": 225,
-          "fov-degrees": 90,
-          "capture-enabled": false,
-          "streaming-enabled": false,
-          "pixels-as-float": true,
-          "compress": false
-        },
-        {
-          "image-type": 2,  // depth perspective
-          "width": 400,
-          "height": 225,
-          "fov-degrees": 90,
-          "capture-enabled": true,
-          "streaming-enabled": false,
-          "pixels-as-float": true,
-          "compress": false
-        },
-        {
-          "image-type": 3,  // segmentation
-          "width": 400,
-          "height": 225,
-          "fov-degrees": 90,
-          "capture-enabled": false,
-          "streaming-enabled": false,
-          "pixels-as-float": false,
-          "compress": false
-        },
-        {
-          "image-type": 4,  // depth vis
-          "width": 400,
-          "height": 225,
-          "fov-degrees": 90,
-          "capture-enabled": false,
-          "streaming-enabled": false,
-          "pixels-as-float": false,
-          "compress": false,
-          "max-depth-meters": 100
-        },
-        {
-          "image-type": 5,  // disparity normalized
-          "width": 400,
-          "height": 225,
-          "fov-degrees": 90,
-          "capture-enabled": false,
-          "streaming-enabled": false,
-          "pixels-as-float": false,
-          "compress": false
-        },
-        {
-          "image-type": 6,  // surface normals
-          "width": 400,
-          "height": 225,
-          "fov-degrees": 90,
-          "capture-enabled": false,
-          "streaming-enabled": false,
-          "pixels-as-float": false,
-          "compress": false
         }
       ],
       "noise-settings": [
@@ -430,12 +369,12 @@
         }
       ],
       "origin": {
-        "xyz": "0 0.0 0.0",
-        "rpy-deg": "0 -90 0"
+        "xyz": "0.2 0.0 0.0",
+        "rpy-deg": "0 -60 0"
       }
     },
     {
-      "id": "IMU1",
+      "id": "Imu",
       "type": "imu",
       "enabled": true,
       "parent-link": "Frame",
