@@ -1,4 +1,5 @@
 import asyncio
+import threading
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Imu, Image
@@ -37,7 +38,6 @@ class AirSimWrapperNode(Node):
         # Initialize airsim objects
         self.client = None
         self.world = None
-        self.drone = None
         self.rover = None
         
         # Dictionary to store drone objects and their publishers
@@ -51,7 +51,14 @@ class AirSimWrapperNode(Node):
         
         # Run the async initialization (blocking)
         asyncio.run(self.initialize_airsim())
-        asyncio.run(execute_rover_traj1(self.rover))
+        
+        # Start asyncio event loop in separate thread for rover trajectory
+        self.loop = asyncio.new_event_loop()
+        self.async_thread = threading.Thread(target=self._run_async_loop, daemon=True)
+        self.async_thread.start()
+        
+        # Start rover trajectory as background task in the asyncio thread
+        asyncio.run_coroutine_threadsafe(execute_rover_traj1(self.rover), self.loop)
     
     async def initialize_airsim(self):
         # Create a Project AirSim client
@@ -187,10 +194,15 @@ class AirSimWrapperNode(Node):
     
     def shutdown(self):
         """Clean shutdown method"""
+        # Stop asyncio event loop
+        if hasattr(self, 'loop'):
+            self.loop.call_soon_threadsafe(self.loop.stop)
+            if hasattr(self, 'async_thread'):
+                self.async_thread.join(timeout=2.0)
+        
         if self.client is not None:
             self.get_logger().info('Disconnecting from AirSim')
             self.client.disconnect()
-
 
 def main(args=None):
     rclpy.init(args=args)
