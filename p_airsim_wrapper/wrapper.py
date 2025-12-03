@@ -58,7 +58,7 @@ class AirSimWrapperNode(Node):
         self.async_thread.start()
         
         # Start rover trajectory as background task in the asyncio thread
-        asyncio.run_coroutine_threadsafe(execute_rover_traj1(self.rover), self.loop)
+        self.rover_task = asyncio.run_coroutine_threadsafe(execute_rover_traj1(self.rover), self.loop)
     
     async def initialize_airsim(self):
         # Create a Project AirSim client
@@ -194,11 +194,15 @@ class AirSimWrapperNode(Node):
     
     def shutdown(self):
         """Clean shutdown method"""
-        # Stop asyncio event loop
-        if hasattr(self, 'loop'):
+        self.rover_task.cancel()
+        
+        # Stop asyncio event loop gracefully
+        if self.loop is not None and self.loop.is_running():
             self.loop.call_soon_threadsafe(self.loop.stop)
-            if hasattr(self, 'async_thread'):
-                self.async_thread.join(timeout=2.0)
+        
+        # Wait for thread to finish
+        if self.async_thread is not None and self.async_thread.is_alive():
+            self.async_thread.join(timeout=2.0)
         
         if self.client is not None:
             self.get_logger().info('Disconnecting from AirSim')
